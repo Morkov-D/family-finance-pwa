@@ -1,24 +1,6 @@
 {
-  "name": "family-finance-pwa",
-  "version": "0.3.0",
-  "private": true,
-  "type": "module",
-  "scripts": {
-    "dev": "vite --host 0.0.0.0",
-    "build": "tsc --noEmit && vite build",
-    "preview": "vite preview --host 0.0.0.0"
-  },
-  "dependencies": {
-    "@vitejs/plugin-react": "^4.3.4",
-    "vite": "^6.0.5",
-    "typescript": "^5.7.3",
-    "react": "^18.3.1",
-    "react-dom": "^18.3.1",
-    "@types/react": "^18.3.18",
-    "@types/react-dom": "^18.3.5",
-    "lucide-react": "^0.468.0",
-    "html5-qrcode": "^2.3.8",
-    "dexie": "^4.0.11",
-    "vite-plugin-pwa": "^0.21.1"
-  }
+ "name":"family-finance-pwa","version":"1.0.0","private":true,"type":"module",
+ "scripts":{"dev":"vite --host 0.0.0.0","build":"tsc --noEmit && vite build","preview":"vite preview --host 0.0.0.0","gas:push":"clasp push","gas:status":"clasp show-file-status"},
+ "dependencies":{"react":"^18.3.1","react-dom":"^18.3.1","dexie":"^4.0.11","lucide-react":"^0.468.0","html5-qrcode":"^2.3.8"},
+ "devDependencies":{"@types/react":"^18.3.18","@types/react-dom":"^18.3.5","@vitejs/plugin-react":"^4.3.4","typescript":"^5.7.3","vite":"^6.0.5","vite-plugin-pwa":"^0.21.1","@google/clasp":"^3.0.0"}
 }

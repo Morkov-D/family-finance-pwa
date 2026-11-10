@@ -1,0 +1,19 @@
+<!doctype html><html><head><base target="_top"></head><body><script>
+/* This page runs inside the Apps Script HtmlService sandbox.
+ * Only the configured GitHub Pages origin may use the RPC bridge.
+ * Every finance operation still requires a valid server-side session token. */
+(function(){
+ 'use strict';
+ var target='<?= parentOrigin ?>';
+ function send(payload){window.parent.postMessage(payload,target)}
+ window.addEventListener('message',function(event){
+   if(event.source!==window.parent||event.origin!==target)return;
+   var m=event.data;
+   if(!m||m.channel!=='family-finance-v1'||m.type!=='request'||!/^[-\w]{1,100}$/.test(m.id||''))return;
+   google.script.run.withSuccessHandler(function(response){send({channel:'family-finance-v1',type:'response',id:m.id,response:response})})
+    .withFailureHandler(function(error){send({channel:'family-finance-v1',type:'response',id:m.id,response:{ok:false,error:String(error&&error.message||'Script error')}})})
+    .rpc(m.payload);
+ });
+ send({channel:'family-finance-v1',type:'ready'});
+})();
+</script></body></html>

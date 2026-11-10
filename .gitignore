@@ -4,5 +4,4 @@ dist/
 .env.*
 !.env.example
 .clasp.json
-.DS_Store
 *.log
