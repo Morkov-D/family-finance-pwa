@@ -28,3 +28,37 @@ jobs:
         with:
           path: dist
       - uses: actions/deploy-pages@v4
+
+      - name: Verify public site and assets after deployment
+        shell: bash
+        run: |
+          set -euo pipefail
+          SITE="https://morkov-d.github.io/family-finance-pwa/"
+          echo "Checking public page: $SITE"
+          for attempt in $(seq 1 12); do
+            if curl --max-time 20 --fail --silent --show-error --location --header 'Cache-Control: no-cache' "${SITE}?healthcheck=${GITHUB_SHA}" --output /tmp/pwa-page.html; then
+              echo "Public HTML reachable on attempt ${attempt}"
+              break
+            fi
+            if [ "$attempt" -eq 12 ]; then
+              echo "Published HTML is unavailable" >&2
+              exit 1
+            fi
+            sleep 5
+          done
+          if ! grep -q 'id="root"' /tmp/pwa-page.html; then
+            echo "Public page does not contain React root element." >&2
+            head -c 300 /tmp/pwa-page.html
+            exit 1
+          fi
+          grep -oE '/family-finance-pwa/assets/[^" ]+\\.(js|css)' /tmp/pwa-page.html | sort -u > /tmp/pwa-assets.txt || true
+          if [ ! -s /tmp/pwa-assets.txt ]; then
+            echo "No built JS/CSS found in published HTML" >&2
+            cat /tmp/pwa-page.html
+            exit 1
+          fi
+          while IFS= read -r path; do
+            echo "Checking asset ${path}"
+            curl --fail --silent --show-error --location --max-time 20 --output /dev/null "https://morkov-d.github.io${path}"
+          done < /tmp/pwa-assets.txt
+          echo "Published HTML and assets are reachable."
