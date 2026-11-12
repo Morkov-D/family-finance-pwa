@@ -7,6 +7,8 @@ export type Budget={id:string;month:string;category:string;limit:number};
 export type Loan={id:string;name:string;ownerId:string;accountId?:string;principal:number;remaining:number;annualRate:number;payment:number;dueDay:number;kind:'loan'|'card';creditLimit?:number};
 export type Debt={id:string;name:string;ownerId:string;direction:'owed'|'receivable';amount:number;remaining:number;dueDate:string};
 export type Goal={id:string;name:string;ownerId:string;target:number;saved:number;deadline:string};
+export type Recurring={id:string;name:string;ownerId:string;accountId:string;type:'income'|'expense';category:string;amount:number;nextDate:string;frequency:'once'|'weekly'|'monthly';enabled:boolean;dayOfMonth?:number};
+export function nextRecurringDate(date:string,frequency:Recurring['frequency'],dayOfMonth?:number):string{if(frequency==='once')return '';const [year,month,day]=date.split('-').map(Number);const d=new Date(Date.UTC(year,month-1,day));if(frequency==='weekly')d.setUTCDate(d.getUTCDate()+7);else {const m=month===12?1:month+1;const y=month===12?year+1:year;const max=new Date(Date.UTC(y,m,0)).getUTCDate();return `${y}-${String(m).padStart(2,'0')}-${String(Math.min(dayOfMonth||day,max)).padStart(2,'0')}`;}return d.toISOString().slice(0,10)}
 export const id=()=>crypto.randomUUID();
 export const localDay=(d=new Date())=>`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
 export const monthOf=(day:string)=>day.slice(0,7);

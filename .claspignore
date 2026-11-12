@@ -1,2 +1,3 @@
-**/*
-!apps-script/**
+# clasp rootDir is apps-script; other files are outside rootDir.
+node_modules/**
+dist/**

@@ -19,7 +19,10 @@ jobs:
         with:
           node-version: '22'
       - run: npm install --no-audit --no-fund
+      - run: npm run test
       - run: npm run build
+        env:
+          VITE_API_URL: https://family-finance-gateway.massahg.workers.dev
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3
         with:

@@ -1,0 +1,10 @@
+import {test} from 'node:test';
+import assert from 'node:assert/strict';
+import worker from '../worker/index.js';
+const url='https://family-finance-gateway.example.workers.dev/rpc';
+const scriptUrl='https://script.google.com/macros/s/ABC_def-123/exec';
+const request=(payload,origin='https://morkov-d.github.io')=>new Request(url,{method:'POST',headers:{Origin:origin,'Content-Type':'application/json'},body:JSON.stringify(payload)});
+test('gateway rejects unknown origins',async()=>{const r=await worker.fetch(request({scriptUrl,action:'ping'},'https://attacker.example'),{});assert.equal(r.status,403)});
+test('gateway rejects SSRF and query string in URL',async()=>{for(const s of ['http://localhost/','https://script.google.com.evil.tld/macros/s/ABC/exec',scriptUrl+'?key=secret']){const r=await worker.fetch(request({scriptUrl:s,action:'ping'}),{});assert.equal(r.status,400)}});
+test('worker applies CORS to authorized origin preflight',async()=>{const r=await worker.fetch(new Request(url,{method:'OPTIONS',headers:{Origin:'https://morkov-d.github.io'}}),{});assert.equal(r.status,204);assert.equal(r.headers.get('Access-Control-Allow-Origin'),'https://morkov-d.github.io')});
+test('gateway relays only JSON responses from Apps Script',async()=>{const old=globalThis.fetch;try{globalThis.fetch=async()=>new Response(JSON.stringify({ok:true,version:'2.0'}),{status:200,headers:{'content-type':'application/json'}});const r=await worker.fetch(request({scriptUrl,action:'ping'}),{});assert.equal(r.status,200);assert.equal((await r.json()).version,'2.0')}finally{globalThis.fetch=old}});
