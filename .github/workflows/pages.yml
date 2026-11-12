@@ -51,7 +51,7 @@ jobs:
             head -c 300 /tmp/pwa-page.html
             exit 1
           fi
-          grep -oE '/family-finance-pwa/assets/[^" ]+\\.(js|css)' /tmp/pwa-page.html | sort -u > /tmp/pwa-assets.txt || true
+          grep -oE '/family-finance-pwa/assets/[^" ]+[.](js|css)' /tmp/pwa-page.html | sort -u > /tmp/pwa-assets.txt || true
           if [ ! -s /tmp/pwa-assets.txt ]; then
             echo "No built JS/CSS found in published HTML" >&2
             cat /tmp/pwa-page.html
