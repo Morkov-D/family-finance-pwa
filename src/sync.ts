@@ -20,7 +20,7 @@ export async function syncFamily(token:string,scriptUrl:string,userId:string){
  do{
   const result=await api('snapshot',{cursor,limit:300},token,scriptUrl);
   if(cursor===0){
-   await db.transaction('rw',db.members,db.accounts,db.budgets,db.loans,db.debts,db.goals,db.recurring,async()=>{
+   await db.transaction('rw',[db.members,db.accounts,db.budgets,db.loans,db.debts,db.goals,db.recurring],async()=>{
     const members=(result.members||[]) as Member[];const accounts=(result.accounts||[]) as Account[];
     const localMembers=await db.members.toArray();const byId=new Map(localMembers.map(m=>[m.id,m]));
     await db.members.bulkPut(members.map(m=>({...m,pinHash:byId.get(m.id)?.pinHash||'',pinSalt:byId.get(m.id)?.pinSalt||''}))); 
